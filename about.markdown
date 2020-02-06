@@ -4,15 +4,16 @@ title: About
 permalink: /about/
 ---
 
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](https://jekyllrb.com/)
+Hi! I am Sameen, a 24 year old from London, England whose passion lies towards continuous self-improvement. 
 
-You can find the source code for Minima at GitHub:
-[jekyll][jekyll-organization] /
-[minima](https://github.com/jekyll/minima)
+After graduating with a computer science degree, and working in the industry for a while, I have decided to focus on machine learning where I will be pursuing knowledge via self-study before starting my masters.
 
-You can find the source code for Jekyll at GitHub:
-[jekyll][jekyll-organization] /
-[jekyll](https://github.com/jekyll/jekyll)
+You can follow my other blog, which is more non-technical and focuses on what new problems AI has been able to solve and the changes it is bringing to our society [medium.com](https://medium.com/@risingdragon111)
 
+All code here is hosted under my Github profile [samisnotinsane](https://github.com/samisnotinsane)
 
-[jekyll-organization]: https://github.com/jekyll
+I Tweet fairly regularly about AI research developments [@samisnotinsane7](https://twitter.com/samisnotinsane7)
+
+And finally, contact me via [LinkedIn](https://www.linkedin.com/in/sameen-islam/)
+
+Thanks for reading!
