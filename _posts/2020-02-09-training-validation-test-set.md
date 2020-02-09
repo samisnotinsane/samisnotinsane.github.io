@@ -11,6 +11,8 @@ You might think we pour all our data into our model to get the perfect solution,
 
 Finding the exact split ratio is very much dependent on the nature of the data you are dealing with. But as a rule of thumb, a typical split ratio as outlined in the seminal book [The Elements of Statistical Learning](https://web.stanford.edu/~hastie/Papers/ESLII.pdf), says 50% should be allocated to a training set, with the remaining 50% evenly split between validation and test set.
 
+![50% training set, 25% validation set, 25% test set](/assets/C50C302C-E55A-4905-8171-D2D6B08285CF.jpeg)
+
 **Note:** The term _validation set_ and _test set_ is sometimes used interchangeably in the industry.
 
 
