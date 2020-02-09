@@ -15,4 +15,15 @@ Finding the exact split ratio is very much dependent on the nature of the data y
 
 **Note:** The term _validation set_ and _test set_ is sometimes used interchangeably in the industry.
 
+## Training set
 
+This should contain both your independent and dependent variables - also known as input and 
+target vectors. 50% of your data should belong to this set and you should only use this set to actually train your model to prevent overfitting. 
+
+## Validation set
+
+This set consists of the next 25% of your dataset and is used to estimate the prediction error for different models so that you can empirically test which model has the highest accuracy.
+
+## Test set
+
+Keep this set locked up until your model is ready for production. Do not, in any way, try to use this data to train your model as this will definitely result in overfitting and will result in a less accurate model. This set should only contain independent variables and when correctly used, should give us the generalisation error of the final model you have chosen - because sometimes, your model may score a low prediction error just through sheer chance.
