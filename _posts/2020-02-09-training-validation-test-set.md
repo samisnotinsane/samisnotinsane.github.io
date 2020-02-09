@@ -5,7 +5,12 @@ date:   2020-02-09 13:49:14 +0000
 categories: ML
 ---
 
-When deploying a machine learning solution, we want our model to make predictions based on training data. But, it must make these predictions with data it has never seen before. This gives rise to errors in predictions which engineers must try to reduce before deploying the model. 
+When deploying a machine learning solution, we want our model to make predictions based on training data. But, it must make these predictions with data it has never seen before. This gives rise to errors in predictions which engineers must try to reduce before deploying the model. This whole exercise of splitting data is to make our validation and test set representative of unknown future data.
 
-You might think we pour all our data into our model to get the perfect solution, but this is far from the truth. Data is carefully split up into three categories to minimise the likelihood of error in 
+You might think we pour all our data into our model to get the perfect solution, but this is far from the truth. Data is carefully split up into three categories during the exploratory analysis phase to minimise the likelihood of error in prediction, which results in a much more useful system with fewer false-positives and true-negatives.
+
+Finding the exact split ratio is very much dependent on the nature of the data you are dealing with. But as a rule of thumb, a typical split ratio as outlined in the seminal book [The Elements of Statistical Learning](https://web.stanford.edu/~hastie/Papers/ESLII.pdf), says 50% should be allocated to a training set, with the remaining 50% evenly split between validation and test set.
+
+**Note:** The term _validation set_ and _test set_ is sometimes used interchangeably in the industry.
+
 
