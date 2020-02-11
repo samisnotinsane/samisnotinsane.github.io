@@ -17,15 +17,14 @@ If you have been able to follow the analogy I have just given, then the notion o
 **Overfitting**
 When we use a model that is too complex, we end up adapting too closely to our data which results in _over-generalisation_ and _high variance_ as it fluctuates wildly from one datapoint to the next. 
 
-[insert image overfitting]
+![Linear model underfitting the data](/assets/AKOGHLREOP1TIOSM.png)
 
 **Underfitting**
 
-[insert image underfitting]
+![Dodecic polynomial model overfitting the data](/assets/5OI3FKC2OU82R44V.png)
 
 **Ways to deal with the problem**
 
-[insert image correct tradeoff]
-
+![Quartic polynomial model fits the data quite well](/assets/LKPRO99PFXEBV4SO.png)
 
 _In progress..._
