@@ -15,9 +15,26 @@ You on the other hand might  have years of experience on the job. When someone t
 If you have been able to follow the analogy I have just given, then the notion of over and underfitting a model is intuitive to you. The child's model that has overfitted and the teenager's has underfitted - you on the other hand have acquired a model with _just_ the right degree of tradeoff.
 
 **Overfitting**
-When we use a model that is too complex, we end up adapting too closely to our data which results in _over-generalisation_ and _high variance_ as it fluctuates wildly from one datapoint to the next. 
+When we use a model that is too complex, we end up adapting too closely to our data which results in _high variance_ as it fluctuates wildly from one datapoint to the next. The model pays so much attention to every little detail in data that it doesn't generalise well and often results in incorrect predictions for new, unseen data.
 
-![Linear model underfitting the data](/assets/AKOGHLREOP1TIOSM.png)
+**Experiment**
+
+Inspired by the [scikit-learn documentation](https://scikit-learn.org/stable/auto_examples/model_selection/plot_underfitting_overfitting.html) I did a quick experiment to see a practical example of the bias-variance tradeoff. 
+
+Begin by importing the prerequisites:
+{% highlight python %}
+%matplotlib inline
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import cross_val_score
+{% endhighlight %}
+
+<p align="center">
+  <img src="/assets/AKOGHLREOP1TIOSM.png" alt="drawing" width="500"/>
+</p>
 
 **Underfitting**
 
