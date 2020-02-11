@@ -15,6 +15,13 @@ You on the other hand might  have years of experience on the job. When someone t
 If you have been able to follow the analogy I have just given, then the notion of over and underfitting a model is intuitive to you. The child's model that has overfitted and the teenager's has underfitted - you on the other hand have acquired a model with _just_ the right degree of tradeoff.
 
 
+**Overfitting**
+
+
+**Underfitting**
+
+
+**Ways to deal with the problem**
 
 
 
