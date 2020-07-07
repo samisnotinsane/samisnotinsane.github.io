@@ -22,12 +22,128 @@ Today, we will look at how we can build something like the Uber home screen with
 # Steps
 First, let's break the task down by visual features, going from top to bottom. We will need a:
 
-1. Map with a custom colour scheme centered on device current location
-2. Card which takes up roughly half of screen length.
-3. User greeting and a 'Where to?' box.
-4. Scrollable list of destination an icon, title and subtitle.
+1. Card which takes up roughly half of screen length.
+2. Map with a custom colour scheme centered on device current location
 
 Note: I encourage you to code and follow along but as a reminder all code is available in my [geo_maps](https://github.com/samisnotinsane/flutter-bites/tree/master/geo_maps) repo.
+
+
+# Constructing App Layout
+We begin with a blank slate:
+
+`lib/main.dart`
+````
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Geo Maps',
+      theme: ThemeData(
+        accentColor: Color(0xFFFF6238), // Orange, opacity=1.0
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: Scaffold(
+        body: Placeholder(),
+      ),
+    );
+  }
+}
+````
+which should look like this:
+
+<div style="text-align: center">
+    <img src="/assets/flutter-placeholder.png" width="200" />
+</div>
+<br />
+
+#### Where to?
+Refer back to our final result and notice how the greeting and recent destination list is placed in a sheet that can be pulled vertically. Also notice that it is 'in front'/'on top' of the map, so we will need to use a `Stack` ([API Doc](https://api.flutter.dev/flutter/widgets/Stack-class.html)) to implement that effect:
+
+`lib/main.dart`
+````
+import 'package:flutter/material.dart';
+
+import 'widgets/where_to_sheet.dart'; // import custom widget
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Geo Maps',
+      theme: ThemeData(
+        accentColor: Color(0xFFFF6238),
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: Scaffold( 
+        body: Stack( // new code start
+          children: <Widget>[
+            Placeholder(),
+            DraggableScrollableSheet(
+              initialChildSize: 0.3,
+              minChildSize: 0.1,
+              maxChildSize: 0.3,
+              builder: (context, scrollController) {
+                return Container(
+                  padding: EdgeInsets.all(8.0),
+                  color: Colors.amberAccent, // contrast color for debug
+                  child: WhereToSheet(), // custom widget
+                );
+              },
+            ),
+          ],
+        ),
+      ), // new code end
+    );
+  }
+}
+````
+
+To improve readability of our `build` method and to make our code modular, we have created a custom widget which is a child of `DraggableScrollableSheet`([API Doc](https://api.flutter.dev/flutter/widgets/DraggableScrollableSheet-class.html)). This way, the sheet behaviour code lives with the home screen layout and the layout of the sheet itself is encapsulated within the custom widget `WhereToSheet`.
+
+Since the sheet will have UI elements distributed vertically, it makes sense to use a `Column` ([API Docs](https://api.flutter.dev/flutter/widgets/Column-class.html)).
+
+`lib/widgets/where_to_sheet.dart`
+````
+import 'package:flutter/material.dart';
+
+class WhereToSheet extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center, // centres children horizontally
+      children: <Widget>[
+        Container( // Handlebar
+          height: 5.0,
+          width: 50.0,
+          decoration: BoxDecoration(
+            color: Theme.of(context).dividerColor, // light grey by default on iOS
+            borderRadius: BorderRadius.circular(5.0),
+          ),
+        ),
+      ],
+    );
+  }
+}
+````
+Et voilà! Obviously the final design doesn't have an amber background color, but we're using it for now to make the region the sheet will cover visible.
+<div style="text-align: center">
+    <img src="/assets/bottom-sheet-blank.png" width="200" />
+</div>
+<br />
+
+**Lost?** Refer back to [my snapshot](https://github.com/samisnotinsane/flutter-bites/commit/552f2aba19b5f62c0605c92b480fc1b5386a9d31) to get back on track!
+
+_In progress..._
 
 # Map with custom theme
 Let's integrate Google Maps into our app. We will need an API key, a package dependency and of course, the app skeleton on which the map will be displayed.
@@ -131,31 +247,3 @@ In Android's case, open `android/app/src/main/AndroidManifest.xml` and add the f
 ````
 
 **Lost?** See [example](https://github.com/samisnotinsane/flutter-bites/commit/60ddadb0ad026c244099c39c21616bee4ed9e905#diff-ef3842c19e4a6b4139f27c2313c9c4b4) to get back on track!
-
-# Constructing App Layout
-Now for the fun part! We begin with a blank slate:
-
-`lib/main.dart`
-````
-import 'package:flutter/material.dart';
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Geo Maps',
-      theme: ThemeData(
-        accentColor: Color(0xFFFF6238), // Orange, opacity=1.0
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: Scaffold(
-        body: Placeholder(),
-      ),
-    );
-  }
-}
-````
