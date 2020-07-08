@@ -135,13 +135,69 @@ class WhereToSheet extends StatelessWidget {
   }
 }
 ````
-Et voilà! Obviously the final design doesn't have an amber background color, but we're using it for now to make the region the sheet will cover visible.
+Et voilà! 
+
+Obviously the final design doesn't have an amber background color, but we're using it for now to make the region the sheet will cover visible. Change the value to `Theme.of(context).cardColor` once you're convinced the sheet exists.
 <div style="text-align: center">
     <img src="/assets/bottom-sheet-blank.png" width="200" />
 </div>
 <br />
 
 **Lost?** Refer back to [my snapshot](https://github.com/samisnotinsane/flutter-bites/commit/552f2aba19b5f62c0605c92b480fc1b5386a9d31) to get back on track!
+
+Now, let's build the 'Where to?' button. We know it's going to be a button and not a TextField because in the original app, tapping this element takes the user to a different screen. We begin with a `FlatButton` ([API Doc](https://api.flutter.dev/flutter/material/FlatButton-class.html)) and customise it to suit our needs:
+
+`where_to_button.dart`
+
+````
+import 'package:flutter/material.dart';
+
+class WhereToButton extends StatelessWidget {
+  WhereToButton({@required this.onPressedHandler});
+
+  final Function onPressedHandler;
+
+  @override
+  Widget build(BuildContext context) {
+    return FractionallySizedBox(
+      widthFactor: 0.95,
+      child: FlatButton(
+        padding: EdgeInsets.symmetric(
+          horizontal: 8.0,
+          vertical: 14.0,
+        ),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'Where to?',
+            style: TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        onPressed: onPressedHandler,
+        color: Colors.grey[300],
+        textColor: Colors.grey[900],
+      ),
+    );
+  }
+}
+````
+
+Despite being an object-oriented language, Dart provides first-class support for functions through the `Function` type([API Doc](https://api.dart.dev/stable/2.8.4/dart-core/Function-class.html)). Here, we accept a `Function` `onPressedHandler` which is simply a callback. This way, we're free to define the button now as we see fit, and leave the code open to modification later when we actually instantiate the button. This makes sense because what actually happens when the user taps on the button is undefined under the scope of this article.
+
+The most interesting component in this widget is the `FractionallySizedBox` ([API Doc](https://api.flutter.dev/flutter/widgets/FractionallySizedBox-class.html)) which basically allows us to say that "make the width of this button 95% than that of its parent container" (which is the width of the `Column` in `where_to_sheet.dart`).
+
+Let's see the results:
+
+<div style="text-align: center">
+    <img src="/assets/where_to_btn.png" width="200" />
+</div>
+<br />
+
+Cool, the that button looks good enough to me.
+
 
 _In progress..._
 
