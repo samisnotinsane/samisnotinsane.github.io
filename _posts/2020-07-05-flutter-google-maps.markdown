@@ -196,8 +196,133 @@ Let's see the results:
 </div>
 <br />
 
-Cool, the that button looks good enough to me.
+Cool, things appear to be taking shape. Now, on to implementing the list of recent destinations.
 
+#### Recent Destinations List
+
+Begin by creating an object model for a `Destination`. Looking at the UI mockup, we can see there's a title and an address line - so we pick those as attributes for the object model.
+
+<div style="text-align: center">
+    <img src="/assets/destination-tile.png" width="200" />
+</div>
+<br />
+
+The idea is, we will create a mock data class which will inject instances of `Destination` through the constructor of `WhereToSheet` which we will modify shortly.
+
+`lib/model/destination.dart`
+
+````
+import 'package:flutter/foundation.dart';
+
+class Destination {
+  Destination({@required this.title, @required this.address});
+
+  final String title;
+  final String address;
+}
+````
+
+In our `MockData` class, we're using an `UnmodifiableListView` ([API Doc](https://api.dart.dev/stable/2.8.4/dart-collection/UnmodifiableListView-class.html)) to get an immutable view of our private list `_destinations` - this prevents client code from tampering our private list by accessing its reference through the getter.
+
+`lib/mock/mock_data.dart`
+
+````
+import 'dart:collection';
+
+import '../model/destination.dart';
+
+class MockData {
+  final List<Destination> _destinations = [];
+
+  UnmodifiableListView<Destination> get destinations =>
+      UnmodifiableListView(_destinations);
+
+  set addDestination(Destination destination) => _destinations.add(destination);
+}
+````
+Another important observation to make is that the `final` keyword doesn't make our list immutable. It just prevents _reassignment_, guaranteeing that we're always going to be working with the same list when interacting with `MockData` during runtime.
+
+Now is a good time to convert `WhereToSheet` to a `StatefulWidget` ([API Doc](https://api.flutter.dev/flutter/widgets/StatefulWidget-class.html)) because we will need to make use of the `initState` lifecycle method, where we will instantiate some Destination objects and load them up in our `MockData`.
+
+`lib/widgets/where_to_sheet.dart`
+
+````
+import 'package:flutter/material.dart';
+import 'package:geo_maps/model/destination.dart';
+
+import '../mock/mock_data.dart';
+import 'where_to_button.dart';
+import 'where_to_recent_dest_list.dart';
+
+class WhereToSheet extends StatefulWidget {
+  @override
+  _WhereToSheetState createState() => _WhereToSheetState();
+}
+
+class _WhereToSheetState extends State<WhereToSheet> {
+  final MockData _mockData = MockData();
+  List<Destination> _destinations;
+
+  @override
+  void initState() {
+    super.initState();
+    addDummyDestinations();
+    _destinations = _mockData.destinations; // get an immutable reference to destinations list.
+  }
+
+  // Insert a few destinations to populate our list.
+  void addDummyDestinations() {
+    // Use setter [addDestination] to push objects into list.
+    _mockData.addDestination = Destination(
+      title: 'Home',
+      address: 'Knightsbridge, London',
+    );
+    _mockData.addDestination = Destination(
+      title: 'Work',
+      address: 'Piccadilly, London',
+    );
+    _mockData.addDestination = Destination(
+      title: 'Black Sheep Coffee',
+      address: 'Leadenhall St, London',
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Container(
+          // Handlebar
+          height: 5.0,
+          width: 50.0,
+          decoration: BoxDecoration(
+            color: Theme.of(context).dividerColor,
+            borderRadius: BorderRadius.circular(5.0),
+          ),
+        ),
+        Text(
+          // Greeting
+          'Good morning, Sameen',
+          style: TextStyle(
+            fontSize: 22.0,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Divider(
+          color: Theme.of(context).dividerColor,
+        ),
+        WhereToButton(
+          onPressedHandler: () {},
+        ),
+        WhereToRecentDestList( // Create destination tiles using mock data
+          destinations: _destinations,
+        ),
+      ],
+    );
+  }
+}
+````
 
 _In progress..._
 
