@@ -2,7 +2,7 @@
 layout: post
 title:  "Geolocation and mapping in apps"
 date:   2020-07-05 23:55:00 +0100
-categories: Mobile, App, Flutter
+categories: Mobile App Flutter
 ---
 
 I came across Flutter during the lockdown this year while working on a hobby project where I needed a mobile app with native functionality. Having suffered trauma from building UI using Java Swing and FX before, I initially had little enthusiasm for the project at hand. 
@@ -28,7 +28,7 @@ First, let's break the task down by visual features, going from top to bottom. W
 Note: I encourage you to code and follow along but as a reminder all code is available in my [geo_maps](https://github.com/samisnotinsane/flutter-bites/tree/master/geo_maps) repo.
 
 
-# Constructing App Layout
+# Constructing the bottom sheet
 We begin with a blank slate:
 
 `lib/main.dart`
@@ -324,7 +324,179 @@ class _WhereToSheetState extends State<WhereToSheet> {
 }
 ````
 
-_In progress..._
+Let's take a look at our progress so far:
+
+<div style="text-align: center">
+    <img src="/assets/uber-iter-1-1.png" width="200" />
+</div>
+<br />
+
+Comparing with our final mockup, we can spot a few discrepancies here: 
+
+- Greeting message does not have enough padding
+- Recent destination tiles have too much padding
+- Icon missing background color and shape
+
+In the next section, we will bring some polish to our app's look.
+
+#### Refactoring
+
+Before modifying the code further, it's worth looking at how we've quickly prototyped the recent destination list (as seen in the screenshot above) using Flutter's built in `ListTile` ([API Doc](https://api.flutter.dev/flutter/material/ListTile-class.html)).
+
+`lib/widgets/where_to_recent_dest_list.dart`
+
+````
+import 'package:flutter/material.dart';
+
+import '../model/destination.dart';
+
+class WhereToRecentDestList extends StatelessWidget {
+  final List<Destination> _destinations;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      // [Expanded] prevents vertical overflow
+      child: ListView.separated(
+        shrinkWrap: true, // prevent setting height to infinity
+        padding: EdgeInsets.all(0), // remove default padding
+        separatorBuilder: (context, index) => Divider(
+          // 16% of screen width
+          indent: MediaQuery.of(context).size.width * 0.16,
+        ),
+        itemBuilder: (context, index) => ListTile( // this will be refactored
+          leading: Icon(Icons.history),
+          title: Text(_destinations[index].title),
+          subtitle: Text(_destinations[index].address),
+        ),
+        itemCount: _destinations.length,
+      ),
+    );
+  }
+}
+
+````
+
+Rather than using a `ListTile`, we will use the more primitive `Row` and `Column` widgets to build a similar layout; we refactor this way to afford greater customisation.
+
+<div style="text-align: center">
+    <img src="/assets/destination-tile-wireframe.jpg" width="400" />
+</div>
+<br />
+
+The sketch above translates to the following widget:
+
+`lib/widgets/where_to_recent_dest_tile.dart`
+
+````
+import 'package:flutter/material.dart';
+
+import '../model/destination.dart';
+
+class WhereToRecentDestTile extends StatelessWidget {
+  const WhereToRecentDestTile({
+    @required this.destination,
+  });
+
+  final Destination destination;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior:
+          HitTestBehavior.translucent, // includes tapping in 'blank' areas
+      onTap: () => print('${destination.title} tapped'),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          RawMaterialButton(
+            onPressed: null, // disables inkwell effect
+            shape: CircleBorder(),
+            fillColor: Theme.of(context).accentColor, // orange
+            elevation: 0.2,
+            child: destination.title.toUpperCase() == 'HOME'
+                ? Icon(
+                    Icons.home,
+                    color: Theme.of(context).canvasColor, // white
+                  )
+                : destination.title.toUpperCase() == 'WORK'
+                    ? Icon(
+                        Icons.work,
+                        color: Theme.of(context).canvasColor,
+                      )
+                    : Icon(
+                        Icons.history,
+                        color: Theme.of(context).canvasColor,
+                      ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                destination.title,
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(
+                height: 6.0, // create space between title and address
+              ),
+              Text(
+                destination.address,
+                style: TextStyle(
+                  fontSize: 14.0,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+````
+
+By wrapping the entire `Row` in a `GestureDetector` ([API Doc](https://api.flutter.dev/flutter/widgets/GestureDetector-class.html)) we're able to detect taps which will let us progress to the next screen in the future. We've also made the list dynamic by conditionally rendering icons depending on the title.
+
+Go back to `lib/widgets/where_to_sheet.dart` and in the `build` method add spacing between elements by inserting `SizedBox` with a small height like this:
+
+````
+// ...
+Container(
+          // Handlebar
+          height: 5.0,
+          width: 50.0,
+          decoration: BoxDecoration(
+            color: Theme.of(context).dividerColor,
+            borderRadius: BorderRadius.circular(5.0),
+          ),
+        ),
+        SizedBox(
+          height: 6.0, // spacing
+        ),
+        Text(
+          // Greeting
+          'Good morning, Sameen',
+          style: TextStyle(
+            fontSize: 22.0,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+// ...
+````
+I'm not adding the full code here again for brevity, but [click here](https://github.com/samisnotinsane/flutter-bites/blob/master/geo_maps/lib/widgets/where_to_sheet.dart) to see the full source for this widget.
+
+At this point you may begin to notice the sheet itself may be too small, so you may return to `main.dart` and tweak the `initialChildSize` property of `DraggableScrollableSheet`. I set mine to `0.35`.
+
+**Caution**: Ensure `initialChildSize <= maxChildSize` to prevent crash.
+
+After these changes, you should be done with the bottom sheet.
+
+<div style="text-align: center">
+    <img src="/assets/uber-iter-1-3.png" width="200" />
+</div>
+<br />
 
 # Map with custom theme
 Let's integrate Google Maps into our app. We will need an API key, a package dependency and of course, the app skeleton on which the map will be displayed.
