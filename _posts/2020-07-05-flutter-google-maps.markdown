@@ -5,11 +5,9 @@ date:   2020-07-05 23:55:00 +0100
 categories: Mobile App Flutter
 ---
 
-I came across Flutter during the lockdown this year while working on a hobby project where I needed a mobile app with native functionality. Having suffered trauma from building UI using Java Swing and FX before, I initially had little enthusiasm for the project at hand. 
+I came across Flutter during the lockdown this year while working on a hobby project where I needed a mobile app with native functionality.
 
-I have never been so wrong.
-
-The declarative style of Flutter combined with the straightforward but familiar syntax of Dart is a marvel. I've had so many "is that it?!" moments, that I've basically lost track - it's simply a joy to use such a powerful framework.
+The declarative style of Flutter combined with the straightforward but familiar syntax of Dart is a marvel to behold. I've had so many "is that it?!" moments, that I've basically lost track - it's simply a joy to use this powerful SDK.
 
 # Final Result
 Today, we will look at how we can build something like the Uber home screen with a map.
@@ -22,10 +20,11 @@ Today, we will look at how we can build something like the Uber home screen with
 # Steps
 First, let's break the task down by visual features, going from top to bottom. We will need a:
 
-1. Card which takes up roughly half of screen length.
-2. Map with a custom colour scheme centered on device current location
+1. Card which takes up roughly half of screen length
+2. Loading animation to show before the map loads
+3. Map with custom colour scheme centered on device current location
 
-Note: I encourage you to code and follow along but as a reminder all code is available in my [geo_maps](https://github.com/samisnotinsane/flutter-bites/tree/master/geo_maps) repo.
+Note: I encourage you to follow along and code, but as a reminder, all code is available in my [GitHub repository](https://github.com/samisnotinsane/flutter-bites/tree/master/geo_maps).
 
 
 # Constructing the bottom sheet
@@ -575,9 +574,9 @@ We will come back to this later after creating a skeleton app, so we can apply o
 **Lost?** See [this](https://github.com/samisnotinsane/flutter-bites/commit/800a1512778d4c061128c88f6aae3ccad75a947b#diff-ef3842c19e4a6b4139f27c2313c9c4b4) and [this](https://github.com/samisnotinsane/flutter-bites/commit/bd088d4d4e0aa81c9f6224ddf6b854637340ddb3#diff-ef3842c19e4a6b4139f27c2313c9c4b4) example to get back on track!
 
 # Acquiring Device Location
-Remember how we added a dependency in `pubspec.yaml` earlier? We're going to add another one now called [geolocator](https://pub.dev/packages/geolocator) (version `^5.3.2+2` as of writing) which will determine device location.
+We're going to add another dependency called [geolocator](https://pub.dev/packages/geolocator) (version `^5.3.2+2` as of writing) which will determine device location.
 
-Add this in your dependency list:
+Add this in your `pubspec.yaml` under `google_maps_flutter` which was an earlier entry you made:
 `geolocator: ^5.3.2+2`
 
 Since device location is a sensitive operation, we need to ask the app user for permission. In iOS, this is configured by adding the following keys in `Info.plist` file (these should be the direct child of the `<dict>` tag):
@@ -600,3 +599,100 @@ In Android's case, open `android/app/src/main/AndroidManifest.xml` and add the f
 ````
 
 **Lost?** See [example](https://github.com/samisnotinsane/flutter-bites/commit/60ddadb0ad026c244099c39c21616bee4ed9e905#diff-ef3842c19e4a6b4139f27c2313c9c4b4) to get back on track!
+
+When our screen loads, we want to use Geolocator to get device location. The callback needed for this behavior, `initState`, is only available in a `StatefulWidget`. Accordingly, we create a `GoogleMapView` to sit alongside our `DraggableScrollableSheet`.
+
+`lib/widgets/map_view.dart`
+
+````
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
+
+class GoogleMapView extends StatefulWidget {
+  @override
+  _GoogleMapViewState createState() => _GoogleMapViewState();
+}
+
+class _GoogleMapViewState extends State<GoogleMapView> {
+  String _mapStyle;
+  Position _currentPosition;
+
+  @override
+  void initState() {
+    super.initState();
+    rootBundle
+        .loadString('assets/map_style.json')
+        .then((value) => _mapStyle = value); // loads custom map theme
+    _getCurrentLocation(); // uses geolocator to acquire device position
+  }
+
+  void _getCurrentLocation() {
+    final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
+    geolocator
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
+        .then((position) => setState(() => _currentPosition = position))
+        .catchError((e) => print(e));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.65,
+      child: Placeholder(),
+    );
+  }
+}
+````
+
+Upon running the app after adding the `GoogleMapView` widget, you'll see the standard platform specific location prompt - make sure you accept this.
+
+<div style="text-align: center">
+    <img src="/assets/location-prompt-ios.png" width="200" />
+</div>
+<br />
+
+#### Add a loading animation
+
+This is a good point to add in the loading animation dependency. While the `geolocator` package makes an `async` operation, there will be nothing to display, so we can fill this time with a nice animated loading indicator which can be pulled in using the `flutter_spinkit` [dependency](https://pub.dev/packages/flutter_spinkit). As of writing, I am using `flutter_spinkit: ^4.1.2+1`.
+
+Your `build` method in `map_view.dart` should read like this after adding in the `SpinKitPulse`. Notice we use conditional rendering to show the loading blip. We expect the value of `_currentPosition` to be `null` until the device acquires good GPS signal and computes current position.
+
+````
+@override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height *
+          0.65, // height (65%) = screen height (100%) - height of bottom card (35%)
+      child: _currentPosition == null ? LoadingBlip() : Placeholder(),
+    );
+  }
+````
+
+where `LoadingBlip` is the custom widget we just created:
+
+`lib/widgets/loading_blip.dart`
+
+````
+import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
+class LoadingBlip extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.65,
+      width: MediaQuery.of(context).size.width * 1,
+      color: Colors.grey[300],
+      child: SpinKitPulse(
+        color: Theme.of(context).indicatorColor,
+        size: 50.0,
+      ),
+    );
+  }
+}
+````
+
+**Feeling lost?** Take a look at [my commit](https://github.com/samisnotinsane/flutter-bites/commit/fbe6b11bfe50ae24406b478c1715c6dcf786e803#diff-ef3842c19e4a6b4139f27c2313c9c4b4) to get back on track.
+
+_In progress..._
