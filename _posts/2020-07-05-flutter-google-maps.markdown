@@ -5,15 +5,22 @@ date:   2020-07-05 23:55:00 +0100
 categories: Mobile App Flutter
 ---
 
-I came across Flutter during the lockdown this year while working on a hobby project where I needed a mobile app with native functionality.
+During this lockdown, I wanted to play with new and unfamiliar technology. Enter Flutter. Google's all new framework for building cross-platform mobile applications.
 
-The declarative style of Flutter combined with the straightforward but familiar syntax of Dart is a marvel to behold. I've had so many "is that it?!" moments, that I've basically lost track - it's simply a joy to use this powerful SDK.
+In many ways, Flutter feels like frontend development reimagined. Gone are HTML markups and CSS styles. Even JavaScript has been done away with in Flutter land. 
+
+Instead, what we have is a modern, object-oriented language called Dart which unifies all disparate aspects of traditional frontend development. It even features a hot reload feature which shaves development time significantly, as code changes do not require constant recompiling. 
+
+Although young, Flutter seems to be a leap forward in the world of mobile app development. As such, this framework is certainly one to keep an eye on. Personally, I found the quality of documentation and support to be excellent. Google has even made it open source; being able to peek at the implementation of underlying libraries is something I've grown to appreciate a lot.
 
 # Final Result
 Today, we will look at how we can build something like the Uber home screen with a map.
 
 <div style="text-align: center">
-    <img src="/assets/flutter-uber-mock-screenshot.png" width="200" />
+  <div style="padding-right: 80px">
+    <img src="/assets/geo-maps-demo.gif" width="200" />
+  </div>
+  
 </div>
 <br />
 
@@ -693,6 +700,69 @@ class LoadingBlip extends StatelessWidget {
 }
 ````
 
+<div style="text-align: center">
+    <img src="/assets/spinkit-loading-blip.gif" width="200" />
+</div>
+<br />
+
 **Feeling lost?** Take a look at [my commit](https://github.com/samisnotinsane/flutter-bites/commit/fbe6b11bfe50ae24406b478c1715c6dcf786e803#diff-ef3842c19e4a6b4139f27c2313c9c4b4) to get back on track.
 
-_In progress..._
+#### Adding the map
+Returning to `lib/widgets/map_view.dart` in `build`, we now replace the `Placeholder` with a `GoogleMap` object which comes from `google_maps_flutter` dependency. 
+
+`lib/widgets/map_view.dart`
+
+````
+// ...
+
+// Centres map on device location coordinates.
+_buildCameraPosition() => CameraPosition(
+      target: LatLng(_currentPosition.latitude, _currentPosition.longitude),
+      zoom: 16); // positive integers; higher value = more zoom.
+
+// Applies theme to map once it has loaded.
+_buildMap(GoogleMapController mapController) =>
+      mapController.setMapStyle(_mapStyle);
+
+@override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height *
+          0.65, // height (65%) = screen height (100%) - height of bottom card (35%)
+      child: _currentPosition == null
+          ? LoadingBlip()
+          : GoogleMap(
+              myLocationButtonEnabled: false,
+              myLocationEnabled: true,
+              initialCameraPosition: _buildCameraPosition(),
+              onMapCreated: _buildMap,
+            ),
+    );
+  }
+// ...
+````
+
+**Important**: For iOS, it's crucial you enable embedded views preview by inserting:
+
+`info.plist`
+
+````
+<dict>
+  <!-- Add the following two lines -->
+  <key>io.flutter.embedded_views_preview</key> 
+  <string>YES</string>
+  <!-- ... -->
+</dict>
+````
+
+Make sure you cold restart the app for the linker to update your changes.
+
+**Caution**: Check your `ios/Runner/AppDelegate.swift` and `android/app/src/main/AndroidManifest.xml` to see you have added your unique API key as detailed in section 'Project Configuration and Adding Dependencies' above.
+
+#### Summary
+If you've been able to follow along so far, congratulations! You should have an app with Google Maps integrated with a custom theme with a list of recent destinations as an overlay card - just like Uber!
+
+<div style="text-align: center">
+    <img src="/assets/geo-maps-demo.gif" width="200" />
+</div>
+<br />
