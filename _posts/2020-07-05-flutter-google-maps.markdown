@@ -766,3 +766,5 @@ If you've been able to follow along so far, congratulations! You should have an 
     <img src="/assets/geo-maps-demo.gif" width="200" />
 </div>
 <br />
+
+Thanks for reading!
