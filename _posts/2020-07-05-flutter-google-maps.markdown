@@ -759,6 +759,8 @@ Make sure you cold restart the app for the linker to update your changes.
 
 **Caution**: Check your `ios/Runner/AppDelegate.swift` and `android/app/src/main/AndroidManifest.xml` to see you have added your unique API key as detailed in section 'Project Configuration and Adding Dependencies' above.
 
+**Feeling lost?** Take a look at [my commit](https://github.com/samisnotinsane/flutter-bites/commit/75b126553c2ac9721b711e6a46304067478a4cc4) to get back on track.
+
 #### Summary
 If you've been able to follow along so far, congratulations! You should have an app with Google Maps integrated with a custom theme with a list of recent destinations as an overlay card - just like Uber!
 
