@@ -1,6 +1,7 @@
 ---
 layout: post
 mathjax: true
+comments: true
 title:  "Polynomial Curve Fitting"
 date:   2020-12-20 14:15:00 +0000
 categories: ML
