@@ -114,7 +114,8 @@ for i, degree in enumerate([0, 1, 3, 9]):
 
 ## Summary
 In this article, we discussed how data from the real world can be thought of to be generated from an underlying function, which we then set out to approxiate via the adjustment of weights of a polynomial function. We also explored the impact of changing the order of this polynomial function on our model and found that a delicate balance is required to arrive at a good, generalised model.
----
+
+<hr/>
 
 Citations: 
 <br />
