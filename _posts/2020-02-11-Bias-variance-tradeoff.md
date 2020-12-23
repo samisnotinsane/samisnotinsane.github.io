@@ -1,5 +1,6 @@
 ---
 layout: post
+comments: true
 title:  "Bias-Variance Tradeoff in Machine Learning models"
 date:   2020-02-11 17:16:05 +0000
 categories: ML

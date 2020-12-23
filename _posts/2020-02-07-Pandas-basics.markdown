@@ -1,5 +1,6 @@
 ---
 layout: post
+comments: true
 title:  "Getting the hang of Pandas"
 date:   2020-02-07 17:16:54 +0000
 categories: ML

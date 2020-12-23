@@ -1,5 +1,6 @@
 ---
 layout: post
+comments: true
 title:  "Training, Validation and Test Set"
 date:   2020-02-09 13:49:14 +0000
 categories: ML

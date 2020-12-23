@@ -1,5 +1,6 @@
 ---
 layout: post
+comments: true
 title:  "Geolocation and mapping in apps"
 date:   2020-07-14 23:30:00 +0100
 categories: Mobile App Flutter
